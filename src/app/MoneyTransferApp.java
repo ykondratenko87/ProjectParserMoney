@@ -11,7 +11,6 @@ public class MoneyTransferApp {
 
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-
         try {
             int choice;
             do {
@@ -19,7 +18,6 @@ public class MoneyTransferApp {
                 System.out.println("1. Выполнить парсинг файлов перевода");
                 System.out.println("2. Вывести список всех операций");
                 System.out.println("3. Выход");
-
                 System.out.print("Выберите операцию (1-3): ");
                 choice = scanner.nextInt();
                 scanner.nextLine();

@@ -101,12 +101,10 @@ public class MoneyTransferService {
 
     private static void processAccounts(String fileName, List<Account> accounts) throws CustomException {
         Map<String, Integer> banksAccounts = readBanksAccounts();
-
         for (Account account : accounts) {
             String from = account.getFrom();
             String to = account.getTo();
             int amount = account.getAmount();
-
             if (!banksAccounts.containsKey(from) || !banksAccounts.containsKey(to)) {
                 System.err.println("Такого счета нет. Пропуск операции.");
                 continue;
