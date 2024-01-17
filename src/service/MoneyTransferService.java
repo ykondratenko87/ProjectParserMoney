@@ -1,6 +1,6 @@
 package service;
 
-import exception.CustomException;
+import exception.*;
 import model.Account;
 import model.Transaction;
 
@@ -30,7 +30,7 @@ public class MoneyTransferService {
                 }
             });
         } catch (IOException e) {
-            throw new CustomException("Ошибка при чтении файла banksAccounts", e);
+            throw new ReadAccountsException("Ошибка при чтении файла banksAccounts", e);
         }
         return banksAccounts;
     }
@@ -39,7 +39,7 @@ public class MoneyTransferService {
         try {
             Files.write(Paths.get(BANKS_ACCOUNTS_FILE), () -> banksAccounts.entrySet().stream().<CharSequence>map(entry -> entry.getKey() + " " + entry.getValue()).iterator());
         } catch (IOException e) {
-            throw new CustomException("Ошибка при обновлении файла banksAccounts", e);
+            throw new UpdateAccountsException("Ошибка при обновлении файла banksAccounts", e);
         }
     }
 
@@ -53,7 +53,7 @@ public class MoneyTransferService {
                 transactions.addAll(fileTransactions);
             }
         } catch (IOException e) {
-            throw new CustomException("Ошибка при парсинге файлов в директории", e);
+            throw new FileParsingException("Ошибка при парсинге файлов в директории", e);
         }
         return transactions;
     }
@@ -70,7 +70,7 @@ public class MoneyTransferService {
                 transactions.add(new Transaction(fileName, "успешно", new Date()));
             }
         } catch (IOException e) {
-            throw new CustomException("Ошибка при парсинге файла " + filePath, e);
+            throw new FileParsingIOException("Ошибка при парсинге файла " + filePath, e);
         }
         return transactions;
     }
@@ -129,7 +129,7 @@ public class MoneyTransferService {
                 writer.println(transaction);
             }
         } catch (IOException e) {
-            throw new CustomException("Ошибка при записи отчета в файл " + REPORT_FILE, e);
+            throw new ReportWritingException("Ошибка при записи отчета в файл " + REPORT_FILE, e);
         }
     }
 
