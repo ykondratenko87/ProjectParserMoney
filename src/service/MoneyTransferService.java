@@ -87,12 +87,12 @@ public class MoneyTransferService {
                 String to = parts[1];
                 int amount;
                 if (isValidAccountNumber(from) || isValidAccountNumber(to)) {
-                    throw new CustomException("Некорректный формат номера счета в строке: " + line);
+                    throw new CustomException(ErrorMessages.INVALID_ACCOUNT_NUMBER_FORMAT + line);
                 }
                 try {
                     amount = Integer.parseInt(parts[2]);
                 } catch (NumberFormatException e) {
-                    throw new CustomException("Некорректный формат суммы перевода в строке: " + line);
+                    throw new CustomException(ErrorMessages.INVALID_TRANSFER_AMOUNT_FORMAT + line);
                 }
                 accounts.add(new Account(from, to, amount));
             }
@@ -107,13 +107,13 @@ public class MoneyTransferService {
             String to = account.getTo();
             int amount = account.getAmount();
             if (!banksAccounts.containsKey(from) || !banksAccounts.containsKey(to)) {
-                System.err.println("Такого счета нет. Пропуск операции.");
+                System.err.println(ErrorMessages.ACCOUNT_NOT_FOUND);
                 continue;
             }
             int balanceFrom = banksAccounts.get(from);
             int balanceTo = banksAccounts.get(to);
             if (balanceFrom < amount) {
-                System.err.println("Недостаточно средств на счете. " + from + "Пропуск.");
+                System.err.println(ErrorMessages.INSUFFICIENT_FUNDS);
                 continue;
             }
             banksAccounts.put(from, balanceFrom - amount);
