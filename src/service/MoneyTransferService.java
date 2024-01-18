@@ -30,7 +30,7 @@ public class MoneyTransferService {
                 }
             });
         } catch (IOException e) {
-            throw new MoneyTransferException(MoneyTransferException.READ_ACCOUNTS_ERROR_MESSAGE, e);
+            throw new MoneyTransferException(ErrorMessages.READ_ACCOUNTS_ERROR_MESSAGE, e);
         }
         return banksAccounts;
     }
@@ -39,7 +39,7 @@ public class MoneyTransferService {
         try {
             Files.write(Paths.get(BANKS_ACCOUNTS_FILE), () -> banksAccounts.entrySet().stream().<CharSequence>map(entry -> entry.getKey() + " " + entry.getValue()).iterator());
         } catch (IOException e) {
-            throw new MoneyTransferException(MoneyTransferException.UPDATE_ACCOUNTS_ERROR_MESSAGE, e);
+            throw new MoneyTransferException(ErrorMessages.UPDATE_ACCOUNTS_ERROR_MESSAGE, e);
         }
     }
 
@@ -53,7 +53,7 @@ public class MoneyTransferService {
                 transactions.addAll(fileTransactions);
             }
         } catch (IOException e) {
-            throw new MoneyTransferException(MoneyTransferException.FILE_PARSING_ERROR_MESSAGE, e);
+            throw new MoneyTransferException(ErrorMessages.FILE_PARSING_ERROR_MESSAGE, e);
         }
         return transactions;
     }
@@ -70,7 +70,7 @@ public class MoneyTransferService {
                 transactions.add(new Transaction(fileName, "успешно", new Date()));
             }
         } catch (IOException e) {
-            throw new MoneyTransferException(MoneyTransferException.FILE_PARSING_IO_ERROR_MESSAGE + filePath, e);
+            throw new MoneyTransferException(ErrorMessages.FILE_PARSING_IO_ERROR_MESSAGE + filePath, e);
         } catch (CustomException e) {
             throw new RuntimeException(e);
         }
@@ -128,7 +128,7 @@ public class MoneyTransferService {
                 writer.println(transaction);
             }
         } catch (IOException e) {
-            throw new MoneyTransferException(MoneyTransferException.REPORT_WRITING_ERROR_MESSAGE + REPORT_FILE, e);
+            throw new MoneyTransferException(ErrorMessages.REPORT_WRITING_ERROR_MESSAGE + REPORT_FILE, e);
         }
     }
 
