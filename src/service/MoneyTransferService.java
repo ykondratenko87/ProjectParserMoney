@@ -20,7 +20,7 @@ public class MoneyTransferService {
 
     private static final String BANKS_ACCOUNTS_FILE = "src/banksAccounts/accounts.txt";
 
-    public static Map<String, Integer> readBanksAccounts() throws CustomException {
+    public static Map<String, Integer> readBanksAccounts() throws MoneyTransferException {
         Map<String, Integer> banksAccounts = new HashMap<>();
         try (Stream<String> lines = Files.lines(Paths.get(BANKS_ACCOUNTS_FILE))) {
             lines.forEach(line -> {
@@ -30,22 +30,22 @@ public class MoneyTransferService {
                 }
             });
         } catch (IOException e) {
-            throw new ReadAccountsException("Ошибка при чтении файла banksAccounts", e);
+            throw new MoneyTransferException(MoneyTransferException.READ_ACCOUNTS_ERROR_MESSAGE, e);
         }
         return banksAccounts;
     }
 
-    public static void updateBanksAccounts(Map<String, Integer> banksAccounts) throws CustomException {
+    public static void updateBanksAccounts(Map<String, Integer> banksAccounts) throws MoneyTransferException {
         try {
             Files.write(Paths.get(BANKS_ACCOUNTS_FILE), () -> banksAccounts.entrySet().stream().<CharSequence>map(entry -> entry.getKey() + " " + entry.getValue()).iterator());
         } catch (IOException e) {
-            throw new UpdateAccountsException("Ошибка при обновлении файла banksAccounts", e);
+            throw new MoneyTransferException(MoneyTransferException.UPDATE_ACCOUNTS_ERROR_MESSAGE, e);
         }
     }
 
     private static final String REPORT_FILE = "src/report/report.txt";
 
-    public static List<Transaction> parseFilesInDirectory(String directoryPath) throws CustomException {
+    public static List<Transaction> parseFilesInDirectory(String directoryPath) throws MoneyTransferException {
         List<Transaction> transactions = new ArrayList<>();
         try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Paths.get(directoryPath), "*.txt")) {
             for (Path filePath : directoryStream) {
@@ -53,12 +53,12 @@ public class MoneyTransferService {
                 transactions.addAll(fileTransactions);
             }
         } catch (IOException e) {
-            throw new FileParsingException("Ошибка при парсинге файлов в директории", e);
+            throw new MoneyTransferException(MoneyTransferException.FILE_PARSING_ERROR_MESSAGE, e);
         }
         return transactions;
     }
 
-    private static List<Transaction> parseFile(Path filePath) throws CustomException {
+    private static List<Transaction> parseFile(Path filePath) throws MoneyTransferException {
         List<Transaction> transactions = new ArrayList<>();
         try (BufferedReader reader = Files.newBufferedReader(filePath)) {
             String fileName = filePath.getFileName().toString();
@@ -66,11 +66,13 @@ public class MoneyTransferService {
             if (accounts.isEmpty()) {
                 transactions.add(new Transaction(fileName, "ошибка в формате транзакции", new Date()));
             } else {
-                processAccounts(fileName, accounts);
+                processAccounts(accounts);
                 transactions.add(new Transaction(fileName, "успешно", new Date()));
             }
         } catch (IOException e) {
-            throw new FileParsingIOException("Ошибка при парсинге файла " + filePath, e);
+            throw new MoneyTransferException(MoneyTransferException.FILE_PARSING_IO_ERROR_MESSAGE + filePath, e);
+        } catch (CustomException e) {
+            throw new RuntimeException(e);
         }
         return transactions;
     }
@@ -84,7 +86,6 @@ public class MoneyTransferService {
                 String from = parts[0];
                 String to = parts[1];
                 int amount;
-
                 if (isValidAccountNumber(from) || isValidAccountNumber(to)) {
                     throw new CustomException("Некорректный формат номера счета в строке: " + line);
                 }
@@ -99,7 +100,7 @@ public class MoneyTransferService {
         return accounts;
     }
 
-    private static void processAccounts(String fileName, List<Account> accounts) throws CustomException {
+    private static void processAccounts(List<Account> accounts) throws CustomException, MoneyTransferException {
         Map<String, Integer> banksAccounts = readBanksAccounts();
         for (Account account : accounts) {
             String from = account.getFrom();
@@ -121,13 +122,13 @@ public class MoneyTransferService {
         updateBanksAccounts(banksAccounts);
     }
 
-    public static void writeReportToFile(List<Transaction> transactions) throws CustomException {
+    public static void writeReportToFile(List<Transaction> transactions) throws MoneyTransferException {
         try (PrintWriter writer = new PrintWriter(new FileWriter(REPORT_FILE))) {
             for (Transaction transaction : transactions) {
                 writer.println(transaction);
             }
         } catch (IOException e) {
-            throw new ReportWritingException("Ошибка при записи отчета в файл " + REPORT_FILE, e);
+            throw new MoneyTransferException(MoneyTransferException.REPORT_WRITING_ERROR_MESSAGE + REPORT_FILE, e);
         }
     }
 

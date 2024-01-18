@@ -1,6 +1,7 @@
 package app;
 
 import exception.CustomException;
+import exception.MoneyTransferException;
 import model.Transaction;
 import service.MoneyTransferService;
 
@@ -43,6 +44,8 @@ public class MoneyTransferApp {
             } while (choice != 3);
         } catch (CustomException e) {
             System.err.println("Ошибка: " + e.getMessage());
+        } catch (MoneyTransferException e) {
+            throw new RuntimeException(e);
         }
     }
 }
