@@ -18,7 +18,7 @@ import java.util.List;
 
 public class MoneyTransferService {
 
-    private static final String BANKS_ACCOUNTS_FILE = "src/banksAccounts/accounts.txt";
+    private static final String BANKS_ACCOUNTS_FILE = Constants.BANKS_ACCOUNTS_FILE_PATH;
 
     public static Map<String, Integer> readBanksAccounts() throws MoneyTransferException {
         Map<String, Integer> banksAccounts = new HashMap<>();
@@ -43,7 +43,7 @@ public class MoneyTransferService {
         }
     }
 
-    private static final String REPORT_FILE = "src/report/report.txt";
+    private static final String REPORT_FILE = Constants.REPORT_FILE_PATH;
 
     public static List<Transaction> parseFilesInDirectory(String directoryPath) throws MoneyTransferException {
         List<Transaction> transactions = new ArrayList<>();
@@ -132,7 +132,7 @@ public class MoneyTransferService {
         }
     }
 
-    public static List<Transaction> loadAllTransactions() throws CustomException {
+    public static List<Transaction> loadAllTransactions() {
         return new ArrayList<>();
     }
 
